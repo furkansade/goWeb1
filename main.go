@@ -1,29 +1,30 @@
 package main
 
 import (
-	"io"
+	"fmt"
+	"log"
 	"net/http"
 )
 
 func main() {
-	var i ironman
-	var w wolverine
 
 	mux := http.NewServeMux()
-	mux.Handle("/ironman", i)
-	mux.Handle("/wolverine", w)
 
+	x1 := &messageHandler{"First message!"}
+	x2 := &messageHandler{"Second message!"}
+
+	mux.Handle("/first", x1)
+	mux.Handle("/second", x2)
+
+	log.Println("Listening...")
 	http.ListenAndServe(":8081", mux)
+
 }
 
-type ironman int
-
-func (x ironman) ServeHTTP(res http.ResponseWriter, r *http.Request) {
-	io.WriteString(res, "Mr. Iron!")
+type messageHandler struct {
+	message string
 }
 
-type wolverine int
-
-func (x wolverine) ServeHTTP(res http.ResponseWriter, r *http.Request) {
-	io.WriteString(res, "Mr. Wolverine!")
+func (x *messageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, x.message)
 }
