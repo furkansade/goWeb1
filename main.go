@@ -1,44 +1,29 @@
 package main
 
 import (
+	"io"
 	"net/http"
 )
 
-func mainHandler(w http.ResponseWriter, r *http.Request) {
-	// w.Write([]byte("Main Page!"))
-	x := r.URL.Path[1:]
-	message := ""
-
-	if len(x) > 0 {
-		message = "Merhaba, " + x + "!"
-	} else {
-		message = "Main Page!"
-	}
-
-	w.Write([]byte(message))
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Index Page!"))
-	w.WriteHeader(http.StatusOK)
-
-}
-
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("About Page!"))
-}
-
 func main() {
+	var i ironman
+	var w wolverine
 
-	http.HandleFunc("/", mainHandler)
-	http.HandleFunc("/index", indexHandler)
-	http.HandleFunc("/about", aboutHandler)
+	mux := http.NewServeMux()
+	mux.Handle("/ironman", i)
+	mux.Handle("/wolverine", w)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8081", mux)
 }
 
-/*
-http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Merhaba!"))
-	})
-*/
+type ironman int
+
+func (x ironman) ServeHTTP(res http.ResponseWriter, r *http.Request) {
+	io.WriteString(res, "Mr. Iron!")
+}
+
+type wolverine int
+
+func (x wolverine) ServeHTTP(res http.ResponseWriter, r *http.Request) {
+	io.WriteString(res, "Mr. Wolverine!")
+}
